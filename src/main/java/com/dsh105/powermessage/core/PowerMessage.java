@@ -18,7 +18,6 @@
 package com.dsh105.powermessage.core;
 
 import com.dsh105.commodus.ServerUtil;
-import com.dsh105.commodus.StringUtil;
 import com.dsh105.commodus.paginator.Pageable;
 import com.dsh105.commodus.reflection.Reflection;
 import com.dsh105.powermessage.exception.InvalidMessageException;
@@ -56,27 +55,29 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
     static {
         ConfigurationSerialization.registerClass(PowerMessage.class);
 
-        for (Method method : Reflection.getNMSClass("ChatSerializer").getDeclaredMethods()) {
-            if (method.getReturnType().equals(Reflection.getNMSClass("IChatBaseComponent")) && method.getParameterTypes().length == 1 && method.getParameterTypes()[0].equals(String.class)) {
-                CHAT_FROM_JSON = method;
-                break;
+        if (ServerUtil.getBukkitVersion().isCompatible("1.7")) {
+            for (Method method : Reflection.getNMSClass("ChatSerializer").getDeclaredMethods()) {
+                if (method.getReturnType().equals(Reflection.getNMSClass("IChatBaseComponent")) && method.getParameterTypes().length == 1 && method.getParameterTypes()[0].equals(String.class)) {
+                    CHAT_FROM_JSON = method;
+                    break;
+                }
             }
-        }
 
-        ArrayList<Method> packetMethods = new ArrayList<>();
-        for (Method method : Reflection.getNMSClass("EnumProtocol").getDeclaredMethods()) {
-            if (Map.class.isAssignableFrom(method.getReturnType()) && method.getParameterTypes().length == 0) {
-                method.setAccessible(true);
-                packetMethods.add(method);
+            ArrayList<Method> packetMethods = new ArrayList<>();
+            for (Method method : Reflection.getNMSClass("EnumProtocol").getDeclaredMethods()) {
+                if (Map.class.isAssignableFrom(method.getReturnType()) && method.getParameterTypes().length == 0) {
+                    method.setAccessible(true);
+                    packetMethods.add(method);
+                }
             }
-        }
-        CHAT_PACKET_CLASS = (Class<?>) ((Map) Reflection.invoke(packetMethods.get(0), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1])).get(0x02);
+            CHAT_PACKET_CLASS = (Class<?>) ((Map) Reflection.invoke(packetMethods.get(0), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1])).get(0x02);
 
-        try {
-            CHAT_PACKET_CLASS.getConstructor(Reflection.getNMSClass("IChatBaseComponent"));
-        } catch (NoSuchMethodException e) {
-            // This is more of a backup
-            CHAT_PACKET_CLASS = Reflection.getNMSClass("PacketPlayOutChat");
+            try {
+                CHAT_PACKET_CLASS.getConstructor(Reflection.getNMSClass("IChatBaseComponent"));
+            } catch (NoSuchMethodException e) {
+                // This is more of a backup
+                CHAT_PACKET_CLASS = Reflection.getNMSClass("PacketPlayOutChat");
+            }
         }
     }
 
@@ -148,7 +149,7 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
      * @return This object
      */
     public PowerMessage send(Player player) {
-        if (ServerUtil.getVersion().isCompatible("1.7")) {
+        if (ServerUtil.getBukkitVersion().isCompatible("1.7")) {
             Object chatComponent = Reflection.invokeStatic(CHAT_FROM_JSON, toJson());
             Object packet = Reflection.newInstance(Reflection.getConstructor(CHAT_PACKET_CLASS, Reflection.getNMSClass("IChatBaseComponent")), chatComponent);
             Object handle = Reflection.invoke(Reflection.getMethod(player.getClass(), "getHandle"), player);
