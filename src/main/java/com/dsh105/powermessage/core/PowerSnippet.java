@@ -37,7 +37,7 @@ public class PowerSnippet implements JsonWritable, Cloneable, ConfigurationSeria
     private static final String SERIALIZED_COLOURS = "colours";
     private static final String SERIALIZED_ACTION_EVENTS = "actionEvents";
 
-    private static final BiMap<ChatColor, String> STYLE_TO_NAME_MAP;
+    protected static final BiMap<ChatColor, String> STYLE_TO_NAME_MAP;
 
     static {
         ConfigurationSerialization.registerClass(PowerSnippet.class);

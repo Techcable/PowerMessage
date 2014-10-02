@@ -28,6 +28,10 @@ import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonElement;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonWriter;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -48,6 +52,7 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
     protected static final Pattern COLOUR_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([0-9A-FK-OR])", Pattern.CASE_INSENSITIVE);
 
     private static final String SERIALIZED_SNIPPETS = "snippets";
+    private static final JsonParser jsonParser = new JsonParser();
 
     private static Class<?> CHAT_PACKET_CLASS;
     private static Method CHAT_FROM_JSON;
@@ -441,7 +446,39 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
         return powerMessage;
     }
 
-    // TODO: fromJson
+    /**
+     * Converts a raw JSON string to a PowerMessage object. This JSON string is in the format given by {@link #toJson()}
+     * @param json the JSON string which represents a PowerMessage
+     * @return A PowerMessage representing the given JSON string
+     */
+    public static PowerMessage fromJson(String json) {
+        JsonArray serialised = jsonParser.parse(json).getAsJsonObject().getAsJsonArray("extra");
+        PowerMessage powerMessage = new PowerMessage();
+
+        for (JsonElement serialisedElement : serialised) {
+            PowerSnippet snippet = new PowerSnippet("");
+            JsonObject message = serialisedElement.getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : message.entrySet()) {
+                String key = entry.getKey();
+                JsonElement element = entry.getValue();
+
+                if (key.equals("text")) {
+                    snippet.setText(element.getAsString());
+                } else if (PowerSnippet.STYLE_TO_NAME_MAP.containsValue(key)){
+                    if (element.getAsBoolean()) {
+                        snippet.withColour(PowerSnippet.STYLE_TO_NAME_MAP.inverse().get(key));
+                    }
+                } else if (key.equals("color")) {
+                    snippet.withColour(ChatColor.valueOf(element.getAsString().toUpperCase()));
+                } else if (key.equals("clickEvent") || key.equals("hoverEvent")) {
+                    JsonObject event = element.getAsJsonObject();
+                    snippet.withEvent(key.substring(0, key.indexOf("Event")), event.get("action").getAsString(), event.get("value").getAsString());
+                }
+            }
+            powerMessage.then(snippet);
+        }
+        return powerMessage;
+    }
 
     /**
      * Converts a PowerMessage to raw JSON, ready to be sent to a player
