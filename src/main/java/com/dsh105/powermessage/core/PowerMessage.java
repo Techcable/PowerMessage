@@ -18,6 +18,7 @@
 package com.dsh105.powermessage.core;
 
 import com.dsh105.commodus.ServerUtil;
+import com.dsh105.commodus.StringUtil;
 import com.dsh105.commodus.paginator.Pageable;
 import com.dsh105.commodus.reflection.Reflection;
 import com.dsh105.powermessage.exception.InvalidMessageException;
@@ -182,6 +183,15 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
     @Override
     public String getText() {
         return currentGroup.getText();
+    }
+
+    public PowerSnippet getSnippet(String content) {
+        for (PowerSnippet snippet : getSnippets()) {
+            if (snippet.getText().equals(content)) {
+                return snippet;
+            }
+        }
+        return null;
     }
 
     public PowerMessage clear() {
@@ -486,7 +496,7 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
      * @return Raw JSON to represent a PowerMessage
      */
     public String toJson() {
-        if (!isConvertedToJson() || rawJson == null) {
+        if (!convertedToJson || rawJson == null) {
             StringWriter stringWriter = new StringWriter();
             JsonWriter writer = new JsonWriter(stringWriter);
 
