@@ -40,6 +40,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -70,13 +71,32 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
             }
 
             ArrayList<Method> packetMethods = new ArrayList<>();
+            ArrayList<Field> packetFields = new ArrayList<>();
             for (Method method : Reflection.getNMSClass("EnumProtocol").getDeclaredMethods()) {
                 if (Map.class.isAssignableFrom(method.getReturnType()) && method.getParameterTypes().length == 0) {
                     method.setAccessible(true);
                     packetMethods.add(method);
                 }
             }
-            CHAT_PACKET_CLASS = (Class<?>) ((Map) Reflection.invoke(packetMethods.get(0), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1])).get(0x02);
+
+            Map packetPlayMap;
+
+            if (!packetMethods.isEmpty()) {
+                packetPlayMap = (Map) Reflection.invoke(packetMethods.get(0), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1]);
+            } else {
+                for (Field field : Reflection.getNMSClass("EnumProtocol").getDeclaredFields()) {
+                    if (Map.class.isAssignableFrom(field.getType())) {
+                        field.setAccessible(true);
+                        packetFields.add(field);
+                    }
+                }
+                packetPlayMap = (Map) Reflection.getFieldValue(packetFields.get(1), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1]);
+            }
+
+            if (Reflection.getNMSClass("EnumProtocolDirection") != null) {
+                packetPlayMap = (Map) packetPlayMap.get(Reflection.getNMSClass("EnumProtocolDirection").getEnumConstants()[1]);
+            }
+            CHAT_PACKET_CLASS = (Class<?>) packetPlayMap.get(0x02);
 
             try {
                 CHAT_PACKET_CLASS.getConstructor(Reflection.getNMSClass("IChatBaseComponent"));
