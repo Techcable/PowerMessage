@@ -19,7 +19,7 @@ package com.dsh105.powermessage.action;
 
 import com.dsh105.powermessage.core.JsonWritable;
 import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonWriter;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 

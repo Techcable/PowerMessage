@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableBiMap;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonWriter;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.util.*;

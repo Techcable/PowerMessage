@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <version>1.8.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -43,6 +43,12 @@
             <artifactId>craftbukkit</artifactId>
             <version>1.7.9-R0.3-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
         </dependency>
 
         <!-- Commodus -->
@@ -144,8 +150,15 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.dsh105:Commodus</include>
+                                    <include>com.google.code.gson:gson</include>
                                 </includes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>com.dsh105.powermessage.libs.com.google.gson</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
