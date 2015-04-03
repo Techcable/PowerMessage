@@ -63,7 +63,13 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
         ConfigurationSerialization.registerClass(PowerMessage.class);
 
         if (ServerUtil.getBukkitVersion().isCompatible("1.7")) {
-            for (Method method : Reflection.getNMSClass("ChatSerializer").getDeclaredMethods()) {
+            Class<?> chatSerialiser;
+            if (ServerUtil.getBukkitVersion().isSupported("1.8.1")) {
+                chatSerialiser = Reflection.getNMSClass("ChatSerializer");
+            } else {
+                chatSerialiser = Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
+            }
+            for (Method method : chatSerialiser.getDeclaredMethods()) {
                 if (method.getReturnType().equals(Reflection.getNMSClass("IChatBaseComponent")) && method.getParameterTypes().length == 1 && method.getParameterTypes()[0].equals(String.class)) {
                     CHAT_FROM_JSON = method;
                     break;
