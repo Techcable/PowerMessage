@@ -18,7 +18,6 @@
 package com.dsh105.powermessage.core;
 
 import com.dsh105.commodus.ServerUtil;
-import com.dsh105.commodus.StringUtil;
 import com.dsh105.commodus.paginator.Pageable;
 import com.dsh105.commodus.reflection.Reflection;
 import com.dsh105.powermessage.exception.InvalidMessageException;
