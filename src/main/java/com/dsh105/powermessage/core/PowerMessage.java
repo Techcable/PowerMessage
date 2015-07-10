@@ -113,7 +113,7 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
             } catch (ClassNotFoundException ignored) {
             }
             if (enumProtocolDirection != null) {
-                packetPlayMap = (Map) packetPlayMap.getenumProtocolDirection.getEnumConstants()[1]);
+                packetPlayMap = (Map) packetPlayMap.get(enumProtocolDirection.getEnumConstants()[1]);
             }
             CHAT_PACKET_CLASS = (Class<?>) packetPlayMap.get(0x02);
 
