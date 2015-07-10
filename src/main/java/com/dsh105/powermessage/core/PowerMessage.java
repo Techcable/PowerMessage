@@ -102,12 +102,6 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
             
             String fullName = "net.minecraft.server." + ServerUtil.getServerVersion() + ".EnumProtocolDirection";
             Class enumProtocolDirection = null;
-            if (getRemappedClassLoader() != null) {
-                try {
-                    enumProtocolDirection = getRemappedClassLoader().loadClass(fullName);
-                } catch (ClassNotFoundException ignored) {
-                }
-            }
             try {
                 enumProtocolDirection = Class.forName(fullName);
             } catch (ClassNotFoundException ignored) {
