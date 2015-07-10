@@ -98,8 +98,22 @@ public class PowerMessage implements MessageBuilder, Pageable, JsonWritable, Clo
                 packetPlayMap = (Map) Reflection.getFieldValue(packetFields.get(1), Reflection.getNMSClass("EnumProtocol").getEnumConstants()[1]);
             }
 
-            if (Reflection.getNMSClass("EnumProtocolDirection") != null) {
-                packetPlayMap = (Map) packetPlayMap.get(Reflection.getNMSClass("EnumProtocolDirection").getEnumConstants()[1]);
+            // temporary solution
+            
+            String fullName = "net.minecraft.server." + ServerUtil.getServerVersion() + ".EnumProtocolDirection";
+            Class enumProtocolDirection = null;
+            if (getRemappedClassLoader() != null) {
+                try {
+                    enumProtocolDirection = getRemappedClassLoader().loadClass(fullName);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+            try {
+                enumProtocolDirection = Class.forName(fullName);
+            } catch (ClassNotFoundException ignored) {
+            }
+            if (enumProtocolDirection != null) {
+                packetPlayMap = (Map) packetPlayMap.getenumProtocolDirection.getEnumConstants()[1]);
             }
             CHAT_PACKET_CLASS = (Class<?>) packetPlayMap.get(0x02);
 
