@@ -22,8 +22,8 @@
 
         <!-- Commodus -->
         <repository>
-            <id>dsh-repo</id>
-            <url>http://repo.dsh105.com/</url>
+            <id>techcable-repo</id>
+            <url>http://repo.techcable.net/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.dsh105</groupId>
             <artifactId>Commodus</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 
@@ -168,9 +168,12 @@
 
     <distributionManagement>
         <repository>
-            <id>dsh105-ftp</id>
-            <url>ftp://repo.dsh105.com/</url>
+            <id>techcable-repo</id>
+            <url>https://repo.techcable.net/content/repositories/releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>techcable-repo</id>
+            <url>https://repo.techcable.net/content/repositories/snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
-
 </project>
